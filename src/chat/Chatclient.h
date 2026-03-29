@@ -3,6 +3,7 @@
 
 #include <QObject>
 #include <QWebSocket>
+#include <ChatViewMode.h>
 
 class ChatClient : public QObject
 {

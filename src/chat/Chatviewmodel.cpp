@@ -1,4 +1,5 @@
-#include "chatviewmodel.h"
+#include "Chatviewmodel.h"
+#include "Chatclient.h"
 
 ChatViewModel::ChatViewModel(QObject *parent)
     : QObject(parent)

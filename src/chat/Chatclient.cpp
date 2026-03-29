@@ -1,4 +1,4 @@
-#include "chatclient.h"
+#include "Chatclient.h"
 
 void ChatClient::onConnected()
 {

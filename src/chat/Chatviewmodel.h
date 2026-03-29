@@ -3,7 +3,7 @@
 
 #include <QObject>
 #include <QStringList>
-#include "chatclient.h"
+#include <Chatclient.h>
 
 class ChatViewModel : public QObject
 {

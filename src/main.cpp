@@ -1,7 +1,7 @@
 #include <QGuiApplication>
 #include <QQmlApplicationEngine>
 #include <QQmlContext>
-#include "chat/chatviewmodel.h"
+#include "chat/Chatviewmodel.h"
 
 int main(int argc, char *argv[])
 {
