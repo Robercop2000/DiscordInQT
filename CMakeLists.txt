@@ -17,17 +17,18 @@ qt_add_qml_module(appDiscordInQT
     QML_FILES
         qml/Main.qml
     SOURCES
-        src/chat/Chatclient.h
-        src/chat/Chatclient.cpp
+        src/chat/ChatClient.h
+        src/chat/ChatClient.cpp
         src/utils/Utils.h
-        src/chat/Chatviewmodel.h
-        src/chat/Chatviewmodel.cpp
+        src/chat/ChatViewModel.h
+        src/chat/ChatViewModel.cpp
 )
 
-target_include_directories(appGameQT
+target_include_directories(appDiscordInQT
     PUBLIC
     ${CMAKE_CURRENT_SOURCE_DIR}/src
     ${CMAKE_CURRENT_SOURCE_DIR}/src/chat
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/utils
 )
 
 # Qt for iOS sets MACOSX_BUNDLE_GUI_IDENTIFIER automatically since Qt 6.1.

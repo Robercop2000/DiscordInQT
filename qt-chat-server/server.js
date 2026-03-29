@@ -1,11 +1,8 @@
 const WebSocket = require('ws');
 
 const PORT = 3000;
-
-// Crear servidor
 const wss = new WebSocket.Server({ port: PORT });
 
-// Lista de clientes
 const clients = new Set();
 
 wss.on('connection', (ws) => {
@@ -14,21 +11,14 @@ wss.on('connection', (ws) => {
     clients.add(ws);
 
     ws.on('message', (data) => {
-        try {
-            const message = JSON.parse(data);
+        console.log("Mensaje:", data.toString());
 
-            console.log("Mensaje recibido:", message);
-
-            // Broadcast a todos
-            clients.forEach(client => {
-                if (client.readyState === WebSocket.OPEN) {
-                    client.send(JSON.stringify(message));
-                }
-            });
-
-        } catch (err) {
-            console.error("Error parsing JSON:", err);
-        }
+        // Broadcast
+        clients.forEach(client => {
+            if (client.readyState === WebSocket.OPEN) {
+                client.send(data.toString());
+            }
+        });
     });
 
     ws.on('close', () => {

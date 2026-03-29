@@ -13,7 +13,7 @@ ApplicationWindow {
 
         ListView {
             id: listView
-            height: parent.height - inputRow.height - 20
+            height: parent.height - inputRow.height - 60
             width: parent.width
             model: chatViewModel.messages
 
