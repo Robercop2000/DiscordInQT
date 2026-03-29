@@ -1,0 +1,44 @@
+cmake_minimum_required(VERSION 3.16)
+
+project(DiscordInQT VERSION 0.1 LANGUAGES CXX)
+
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+
+find_package(Qt6 REQUIRED COMPONENTS Quick WebSockets)
+
+qt_standard_project_setup(REQUIRES 6.10)
+
+qt_add_executable(appDiscordInQT
+    src/main.cpp
+)
+
+qt_add_qml_module(appDiscordInQT
+    URI DiscordInQT
+    QML_FILES
+        qml/Main.qml
+    SOURCES
+        src/chat/chatclient.h src/chat/chatclient.cpp
+        src/utils/Utils.h
+        src/chat/chatviewmodel.h src/chat/chatviewmodel.cpp
+)
+
+# Qt for iOS sets MACOSX_BUNDLE_GUI_IDENTIFIER automatically since Qt 6.1.
+# If you are developing for iOS or macOS you should consider setting an
+# explicit, fixed bundle identifier manually though.
+set_target_properties(appDiscordInQT PROPERTIES
+#    MACOSX_BUNDLE_GUI_IDENTIFIER com.example.appDiscordInQT
+    MACOSX_BUNDLE_BUNDLE_VERSION ${PROJECT_VERSION}
+    MACOSX_BUNDLE_SHORT_VERSION_STRING ${PROJECT_VERSION_MAJOR}.${PROJECT_VERSION_MINOR}
+    MACOSX_BUNDLE TRUE
+    WIN32_EXECUTABLE TRUE
+)
+
+target_link_libraries(appDiscordInQT
+    PRIVATE Qt6::Quick Qt6::WebSockets
+)
+
+install(TARGETS appDiscordInQT
+    BUNDLE DESTINATION .
+    LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
+    RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
+)
