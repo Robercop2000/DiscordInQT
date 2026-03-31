@@ -11,20 +11,31 @@ wss.on('connection', (ws) => {
     clients.add(ws);
 
     ws.on('message', (data) => {
-        console.log("Mensaje:", data.toString());
+        let msg;
 
-        // Broadcast
+        try {
+            msg = JSON.parse(data);
+        } catch {
+            return;
+        }
+
+        // Guardar usuario
+        if (msg.type === "join") {
+            ws.user = msg.user;
+        }
+
+        // Broadcast a todos
         clients.forEach(client => {
             if (client.readyState === WebSocket.OPEN) {
-                client.send(data.toString());
+                client.send(JSON.stringify(msg));
             }
         });
     });
 
     ws.on('close', () => {
-        console.log("Cliente desconectado");
         clients.delete(ws);
+        console.log("Cliente desconectado");
     });
 });
 
-console.log(`Servidor corriendo en ws://localhost:${PORT}`);
+console.log(`Servidor en ws://localhost:${PORT}`);

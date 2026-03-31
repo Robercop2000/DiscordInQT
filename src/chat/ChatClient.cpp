@@ -1,6 +1,6 @@
 #include "ChatClient.h"
-#include <QJsonObject.h>
-#include <QJsonDocument.h>
+#include <QJsonObject>
+#include <QJsonDocument>
 
 ChatClient::ChatClient(QObject *parent)
     : QObject(parent)
@@ -15,15 +15,33 @@ void ChatClient::connectToServer(const QUrl &url)
     m_socket.open(url);
 }
 
-void ChatClient::sendMessage(const QString &message)
+void ChatClient::sendMessage(const QString &user, const QString &message)
 {
     QJsonObject obj;
-    obj["user"] = "Rober";
+    obj["type"] = "message";
+    obj["user"] = user;
     obj["content"] = message;
-    obj["timestamp"] = QDateTime::currentDateTime().toString(Qt::ISODate);
 
-    QJsonDocument doc(obj);
-    m_socket.sendTextMessage(doc.toJson(QJsonDocument::Compact));
+    m_socket.sendTextMessage(QJsonDocument(obj).toJson(QJsonDocument::Compact));
+}
+
+void ChatClient::sendJoin(const QString &user)
+{
+    QJsonObject obj;
+    obj["type"] = "join";
+    obj["user"] = user;
+
+    m_socket.sendTextMessage(QJsonDocument(obj).toJson(QJsonDocument::Compact));
+}
+
+void ChatClient::sendTyping(const QString &user)
+{
+    QJsonObject obj;
+    obj["type"] = "typing";
+    obj["user"] = user;
+    obj["active"] = !user.isEmpty();
+
+    m_socket.sendTextMessage(QJsonDocument(obj).toJson(QJsonDocument::Compact));
 }
 
 void ChatClient::onConnected()

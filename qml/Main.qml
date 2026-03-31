@@ -8,118 +8,175 @@ ApplicationWindow {
     height: 600
     title: "DiscordInQT"
 
-    RowLayout {
+    ColumnLayout {
         anchors.fill: parent
 
         Rectangle {
-            Layout.preferredWidth: 200
-            Layout.fillHeight: true
-            color: "#2f3136"
+            Layout.fillWidth: true
+            height: 50
+            color: "black"
 
-            Column {
+            Row {
                 anchors.fill: parent
-                spacing: 5
-                padding: 10
+                anchors.margins: 10
+                spacing: 10
 
-                Text {
-                    text: "CANALES"
-                    color: "lightgray"
-                    font.bold: true
+                Button {
+                    text: "Conectar"
+                    onClicked: chatViewModel.connectToServer()
                 }
 
-                ListView {
-                    id: channelList
-                    Layout.fillWidth: true
-                    Layout.fillHeight: true
-                    model: ["general", "random"]
+                Text {
+                    text: chatViewModel.isConnected ? "Conectado" : "Desconectado"
+                    color: chatViewModel.isConnected ? "lightgreen" : "red"
+                }
 
-                    delegate: Rectangle {
-                        width: parent.width
-                        height: 40
-                        color: ListView.isCurrentItem ? "gray" : "transparent"
-                        radius: 5
+                TextField {
+                    id: usernameInput
+                    width: 150
+                    placeholderText: "Usuario"
+                    text: chatViewModel.username
 
-                        Text {
-                            text: modelData
-                            color: "white"
-                            anchors.centerIn: parent
-                        }
-
-                        MouseArea {
-                            anchors.fill: parent
-                            onClicked: channelList.currentIndex = index
-                        }
-                    }
+                    onEditingFinished: chatViewModel.username = text
                 }
             }
         }
 
-        ColumnLayout {
+        RowLayout {
             Layout.fillWidth: true
             Layout.fillHeight: true
 
             Rectangle {
-                Layout.fillWidth: true
+                Layout.preferredWidth: 200
                 Layout.fillHeight: true
-                color: "dimgray"
+                color: "#2f3136"
 
-                ListView {
-                    id: messageList
+                Column {
                     anchors.fill: parent
-                    anchors.margins: 10
+                    spacing: 5
+                    padding: 10
 
-                    model: chatViewModel.messages
+                    Text {
+                        text: "CANALES"
+                        color: "lightgray"
+                        font.bold: true
+                    }
 
-                    delegate: Rectangle {
-                        width: parent.width
-                        height: 50
-                        color: "transparent"
+                    ListView {
+                        id: channelList
+                        anchors.fill: parent
+                        model: ["general", "random"]
 
-                        Text {
-                            text: modelData
-                            color: "white"
-                            wrapMode: Text.Wrap
+                        delegate: Rectangle {
+                            width: parent.width
+                            height: 40
+                            color: ListView.isCurrentItem ? "gray" : "transparent"
+                            radius: 5
+
+                            Text {
+                                text: modelData
+                                color: "white"
+                                anchors.centerIn: parent
+                            }
+
+                            MouseArea {
+                                anchors.fill: parent
+                                onClicked: channelList.currentIndex = index
+                            }
                         }
                     }
                 }
             }
 
-            Rectangle {
+            ColumnLayout {
                 Layout.fillWidth: true
-                height: 60
-                color: "gray"
+                Layout.fillHeight: true
 
-                Row {
-                    anchors.fill: parent
-                    anchors.margins: 10
-                    spacing: 10
+                Rectangle {
+                    Layout.fillWidth: true
+                    Layout.fillHeight: true
+                    color: "dimgray"
 
-                    TextField {
-                        id: input
-                        Layout.fillWidth: true
-                        placeholderText: "Escribe un mensaje..."
-                        color: "white"
-                        background: Rectangle {
-                            color: "black"
-                            radius: 5
+                    Column {
+                        anchors.fill: parent
+
+                        ListView {
+                            id: messageList
+                            anchors.left: parent.left
+                            anchors.right: parent.right
+                            anchors.top: parent.top
+                            anchors.bottom: parent.bottom
+                            anchors.margins: 10
+
+                            model: chatViewModel.messages
+
+                            delegate: Text {
+                                width: messageList.width
+                                text: modelData
+                                color: "white"
+                                wrapMode: Text.Wrap
+                            }
+                        }
+
+                        Text {
+                            id: typingText
+                            width: parent.width
+                            text: chatViewModel.typingUser !== "" ?
+                                  chatViewModel.typingUser + " está escribiendo..." : ""
+                            color: "lightgray"
                         }
                     }
+                }
 
-                    Button {
-                        text: "Enviar"
-                        onClicked: {
-                            if (input.text !== "") {
-                                chatViewModel.sendMessage(input.text)
-                                input.text = ""
+                Rectangle {
+                    Layout.fillWidth: true
+                    height: 60
+                    color: "gray"
+
+                    RowLayout {
+                        anchors.fill: parent
+                        anchors.margins: 10
+                        spacing: 10
+
+                        TextField {
+                            id: input
+                            Layout.fillWidth: true
+                            placeholderText: "Escribe un mensaje..."
+                            color: "black"
+
+                            onTextChanged: {
+                                if (text.length > 0)
+                                    chatViewModel.sendTyping(chatViewModel.username)
+                                else
+                                    chatViewModel.sendTyping("")
+                            }
+
+                            onActiveFocusChanged: {
+                                if (!activeFocus)
+                                    chatViewModel.sendTyping("")
+                            }
+
+                            onAccepted: {
+                                if (text !== "") {
+                                    chatViewModel.sendMessage(text)
+                                    chatViewModel.sendTyping("")
+                                    text = ""
+                                }
+                            }
+                        }
+
+                        Button {
+                            text: "Enviar"
+                            onClicked: {
+                                if (input.text !== "") {
+                                    chatViewModel.sendMessage(input.text)
+                                    input.text = ""
+                                }
                             }
                         }
                     }
                 }
             }
         }
-    }
-
-    Component.onCompleted: {
-        chatViewModel.connectToServer()
     }
 }
