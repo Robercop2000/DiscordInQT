@@ -34,16 +34,18 @@ void ChatClient::sendJoin(const QString &user)
     m_socket.sendTextMessage(QJsonDocument(obj).toJson(QJsonDocument::Compact));
 }
 
-void ChatClient::sendTyping(const QString &user)
+void ChatClient::sendTyping(const QString &user, bool active)
 {
     QJsonObject obj;
+
     obj["type"] = "typing";
     obj["user"] = user;
-    obj["active"] = !user.isEmpty();
+    obj["active"] = active;
 
-    m_socket.sendTextMessage(QJsonDocument(obj).toJson(QJsonDocument::Compact));
+    m_socket.sendTextMessage(
+        QJsonDocument(obj).toJson(QJsonDocument::Compact)
+        );
 }
-
 void ChatClient::onConnected()
 {
     emit connected();

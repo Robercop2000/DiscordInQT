@@ -14,7 +14,7 @@ public:
     Q_INVOKABLE void connectToServer(const QUrl &url);
     Q_INVOKABLE void sendMessage(const QString &user, const QString &message);
     Q_INVOKABLE void sendJoin(const QString &user);
-    Q_INVOKABLE void sendTyping(const QString &user);
+    Q_INVOKABLE void sendTyping(const QString &user, bool active);
 
 signals:
     void connected();

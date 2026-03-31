@@ -43,11 +43,9 @@ set_target_properties(appDiscordInQT PROPERTIES
 )
 
 target_link_libraries(appDiscordInQT
-    PRIVATE Qt6::Quick Qt6::WebSockets
-)
-
-install(TARGETS appDiscordInQT
-    BUNDLE DESTINATION .
-    LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
-    RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
+    PRIVATE
+        Qt6::Core
+        Qt6::Gui
+        Qt6::Quick
+        Qt6::WebSockets
 )

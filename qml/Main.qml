@@ -51,10 +51,9 @@ ApplicationWindow {
                 Layout.fillHeight: true
                 color: "#2f3136"
 
-                Column {
+                ColumnLayout {
                     anchors.fill: parent
                     spacing: 5
-                    padding: 10
 
                     Text {
                         text: "CANALES"
@@ -64,11 +63,12 @@ ApplicationWindow {
 
                     ListView {
                         id: channelList
-                        anchors.fill: parent
-                        model: ["general", "random"]
+                        Layout.fillWidth: true
+                        Layout.fillHeight: true
+                        model: ["General", "Juegos", "AFK"]
 
                         delegate: Rectangle {
-                            width: parent.width
+                            width: ListView.view.width
                             height: 40
                             color: ListView.isCurrentItem ? "gray" : "transparent"
                             radius: 5
@@ -92,20 +92,19 @@ ApplicationWindow {
                 Layout.fillWidth: true
                 Layout.fillHeight: true
 
-                Rectangle {
+                ColumnLayout {
                     Layout.fillWidth: true
                     Layout.fillHeight: true
-                    color: "dimgray"
+                    spacing: 2
 
-                    Column {
-                        anchors.fill: parent
+                    Rectangle {
+                        Layout.fillWidth: true
+                        Layout.fillHeight: true
+                        color: "dimgray"
 
                         ListView {
                             id: messageList
-                            anchors.left: parent.left
-                            anchors.right: parent.right
-                            anchors.top: parent.top
-                            anchors.bottom: parent.bottom
+                            anchors.fill: parent
                             anchors.margins: 10
 
                             model: chatViewModel.messages
@@ -116,15 +115,18 @@ ApplicationWindow {
                                 color: "white"
                                 wrapMode: Text.Wrap
                             }
-                        }
 
-                        Text {
-                            id: typingText
-                            width: parent.width
-                            text: chatViewModel.typingUser !== "" ?
-                                  chatViewModel.typingUser + " está escribiendo..." : ""
-                            color: "lightgray"
+                            onCountChanged: positionViewAtEnd()
                         }
+                    }
+
+                    Text {
+                        Layout.fillWidth: true
+                        Layout.leftMargin: 10
+                        text: chatViewModel.typingText
+                        visible: chatViewModel.typingText !== ""
+                        color: "black"
+                        font.italic: true
                     }
                 }
 
@@ -144,23 +146,52 @@ ApplicationWindow {
                             placeholderText: "Escribe un mensaje..."
                             color: "black"
 
-                            onTextChanged: {
-                                if (text.length > 0)
-                                    chatViewModel.sendTyping(chatViewModel.username)
-                                else
-                                    chatViewModel.sendTyping("")
+                            property bool isTyping: false
+
+                            Timer {
+                                id: typingTimer
+                                interval: 2000
+                                repeat: false
+
+                                onTriggered: {
+                                    input.isTyping = false
+                                    chatViewModel.sendTyping(chatViewModel.username, false)
+                                }
                             }
 
-                            onActiveFocusChanged: {
-                                if (!activeFocus)
-                                    chatViewModel.sendTyping("")
+                            onTextChanged: {
+
+                                if (!isTyping) {
+                                    isTyping = true
+                                    chatViewModel.sendTyping(chatViewModel.username, true)
+                                }
+
+                                typingTimer.restart()
                             }
 
                             onAccepted: {
+
                                 if (text !== "") {
+
                                     chatViewModel.sendMessage(text)
-                                    chatViewModel.sendTyping("")
+
+                                    chatViewModel.sendTyping(chatViewModel.username, false)
+
                                     text = ""
+                                    isTyping = false
+
+                                    typingTimer.stop()
+                                }
+                            }
+
+                            onActiveFocusChanged: {
+
+                                if (!activeFocus && isTyping) {
+
+                                    isTyping = false
+                                    chatViewModel.sendTyping(chatViewModel.username, false)
+
+                                    typingTimer.stop()
                                 }
                             }
                         }
